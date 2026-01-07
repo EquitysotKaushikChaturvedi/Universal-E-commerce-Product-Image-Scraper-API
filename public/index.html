@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Product Scraper | Enterprise AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <main class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="badge">AGENT 7K: ENTERPRISE LUXURY MODE</div>
+            <h1 class="title">Universal Product Image Extraction</h1>
+            <p class="subtitle">Enter any product URL to extract high-resolution, visual-first imagery securely.</p>
+        </header>
+
+        <!-- INPUT SECTION -->
+        <section class="search-section">
+            <div class="input-group">
+                <input type="text" id="urlInput" placeholder="Paste product URL (H&M, Zara, Amazon, Luxury...)"
+                    autocomplete="off">
+                <button id="extractBtn" onclick="extractImages()">
+                    <span id="btnText">EXTRACT IMAGES</span>
+                    <div id="loader" class="spinner" style="display:none"></div>
+                </button>
+            </div>
+            <p class="security-note">
+                <span class="icon">🛡️</span> Secured by <strong>Agent 7K (God Mode)</strong>. Visual Trust Model & Safe
+                Normalization Active.
+            </p>
+        </section>
+
+        <!-- RESULTS SECTION -->
+        <section id="resultSection" class="results-grid" style="display:none">
+            <!-- Images will be injected here -->
+        </section>
+
+        <div id="statusMsg" class="status-msg"></div>
+
+        <!-- FEATURES & TECH -->
+        <section class="features-section">
+            <div class="feature-card">
+                <h3>🚫 Security Bypass</h3>
+                <ul>
+                    <li>Crosses Cloudflare/Akamai (Visual Scan)</li>
+                    <li>Ignores CAPTCHA (DOM Lock-on)</li>
+                    <li>Bypasses Lazy Loading</li>
+                    <li>Shadow DOM Penetration</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h3>💎 Supported Platforms</h3>
+                <ul class="platforms-list">
+                    <li>Louis Vuitton</li>
+                    <li>Gucci / Prada</li>
+                    <li>H&M / Zara / Uniqlo</li>
+                    <li>Amazon / Myntra / Flipkart</li>
+                    <li>Nike / Adidas</li>
+                    <li>Shopify / WooCommerce</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h3>⚡ Enterprise Features</h3>
+                <ul>
+                    <li>High-Res 4K Extraction</li>
+                    <li>Visual Hero Lock-on</li>
+                    <li>Background Style Harvest</li>
+                    <li>Relative URL Resolution</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

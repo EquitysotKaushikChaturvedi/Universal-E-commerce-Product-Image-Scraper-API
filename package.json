@@ -1,0 +1,15 @@
+{
+  "name": "universal-ecommerce-scraper-api",
+  "version": "1.0.0",
+  "description": "API to scrape product images from any e-commerce site using Python + Playwright",
+  "main": "api/server.js",
+  "scripts": {
+    "start": "node api/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "author": "Senior Developer",
+  "license": "ISC"
+}
