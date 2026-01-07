@@ -29,9 +29,18 @@ app.use((req, res, next) => {
 // Mount Routes
 app.use('/api', routes);
 
-// Serve Frontend (Public Directory)
-const path = require('path');
-app.use(express.static(path.join(__dirname, '../public')));
+// API-Only Mode (Frontend Removed)
+app.get('/', (req, res) => {
+    res.json({
+        service: "Universal E-commerce Scraper API",
+        status: "Running",
+        endpoints: {
+            health: "GET /api/health",
+            scrape: "POST /api/scrape"
+        },
+        version: "2.0 (Backend Only)"
+    });
+});
 
 // 404 Handler
 app.use((req, res) => {
