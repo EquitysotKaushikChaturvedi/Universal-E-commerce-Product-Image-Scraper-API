@@ -17,7 +17,8 @@ module.exports = {
     SCRAPER_SCRIPT: path.join(__dirname, '../scraper/scraper.py'),
 
     // Execution Limits
-    TIMEOUT_MS: 45000, // 45 seconds total timeout for Python process
+    // Execution Limits
+    TIMEOUT_MS: 600000, // 10 Minutes (Render Free Tier is slow)
 
 
 

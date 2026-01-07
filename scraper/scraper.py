@@ -24,6 +24,8 @@ import time
 import random
 from playwright.sync_api import sync_playwright
 
+NAME = "MAIN_ORCHESTRATOR"
+
 # Agents
 try:
     from agents.structural import run_structural_agent
@@ -46,7 +48,7 @@ except ImportError:
     from judges import final_judgment
 
 # Config
-TOTAL_BUDGET_MS = 60000 
+TOTAL_BUDGET_MS = 570000 # 9.5 minutes (Leave buffer for Node timeout) 
 
 def stabilize_page(page):
     try:
@@ -129,7 +131,14 @@ def main():
                 final_images = candidates
                 strategy = "Agent 7K (Enterprise Luxury)"
                 note = agent_note
+                print(f"[{NAME}] Agent 7K success! Found {len(candidates)} images.", file=sys.stderr)
+                print(json.dumps({"product_images": candidates, "total_images": len(candidates), "strategy_used": "Agent 7K (Enterprise Luxury)"}))
+                return
+
+            # --- FALLBACK: STANDARD CASCADE (Agents 1-6) ---
+            print(f"[{NAME}] Agent 7K yielded no visual results. Engaging Tactical Cascade (Agents 1-6)...", file=sys.stderr)
             
+            # 1. Structural Agent (Microdata/JSON-LD) - FASTEST
             # 0. SPECIALIST CHECK (Agent 5 - E-commerce Priority)
             # Run FIRST if domain matches to ensure High-Res Specialist logic is used.
             is_ecommerce = any(d in target_url.lower() for d in ['amazon', 'ebay', 'flipkart'])
@@ -190,6 +199,19 @@ def main():
                         final_images = judged
                         strategy = "Agent 4 (Myntra)"
                         note = agent_note
+
+            # 2. Gallery Finder (DOM Heuristics) - BEST VISUALS
+            # This section seems to be from a different logic flow or file,
+            # as 'NAME' and 'gallery_finder' are not defined in this context.
+            # Assuming this is a placeholder or an example of a new agent.
+            # If this is intended to be active, 'NAME' and 'gallery_finder' need to be defined/imported.
+            # For now, it's commented out to maintain syntactical correctness.
+            # print(f"[{NAME}] Structural extraction failed. Deployed Agent 3 (Gallery Finder)...")
+            # gallery_images = gallery_finder.find_gallery_images(page)
+            # if gallery_images:
+            #     print(f"[{NAME}] Agent 3 (Gallery) success.")
+            #     print(json.dumps({"product_images": gallery_images, "total_images": len(gallery_images), "strategy_used": "Agent 3 (Gallery Finder)"}))
+            #     return
 
             # === FINAL OUTPUT ===
             response["strategy_used"] = strategy

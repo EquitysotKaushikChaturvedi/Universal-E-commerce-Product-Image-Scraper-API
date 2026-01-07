@@ -17,6 +17,9 @@ STRATEGIES:
 from playwright.sync_api import Page
 import re
 import urllib.parse
+import sys
+
+NAME = "AGENT-7K"
 
 def run_agent_7k(page: Page):
     """
@@ -144,60 +147,128 @@ def run_agent_7k(page: Page):
         });
         
         // Return strictly sorted by Visual Score
-        return CANDIDATES.sort((a, b) => b.score - a.score).map(c => c.url);
+        return CANDIDATES.sort((a, b) => b.score - a.score).map(c => ({ src: c.url, method: `js_visual_${c.type}` }));
     }'''
 
     try:
         # Run Visual Engine
-        raw_urls = page.evaluate(visual_payload)
-        
+        js_candidates = page.evaluate(visual_payload)
+        candidates.extend(js_candidates)
+
+        # ------------------------------------------------------------------
+        # STRATEGY 4: H&M / ZARA / UNIQLO SPECIFIC (The "Scroll & Harvest" Maneuver)
+        # ------------------------------------------------------------------
+        # H&M specifically lazy loads heavily. We must force scroll.
+        if "hm.com" in page.url or "zara.com" in page.url or "uniqlo.com" in page.url:
+            print(f"[{NAME}] Detected Fashion Giant. Initiating deep scroll...", file=sys.stderr)
+            try:
+                # Scroll down repeatedly to trigger lazy loading
+                for _ in range(5):
+                    page.evaluate("window.scrollBy(0, 800)")
+                    page.wait_for_timeout(500)
+                
+                # H&M Specific: Click "Load more" if present (often in gallery)
+                try:
+                    page.click('button:has-text("Load more")', timeout=1000)
+                except:
+                    pass
+                    
+                # Specific selectors for H&M's new gallery structure
+                hm_selectors = [
+                    ".product-detail-main-image-container img",
+                    ".product-detail-thumbnails img",
+                    ".product-gallery img",
+                    "figure.pdp-image-template img",
+                    ".product-detail-images img"
+                ]
+                for sel in hm_selectors:
+                    elements = page.query_selector_all(sel)
+                    for el in elements:
+                        src = el.get_attribute('src')
+                        if src:
+                            candidates.append({'src': src, 'method': 'hm_special_dom'})
+                            
+            except Exception as e:
+                print(f"[{NAME}] Scroll maneuver errors: {e}", file=sys.stderr)
+
+        # ------------------------------------------------------------------
+        # STRATEGY 6: AMAZON / FLIPKART RETRY (The "Double Tap")
+        # ------------------------------------------------------------------
+        # Only retry if initial visual scan yielded few results
+        if ("amazon" in page.url or "flipkart" in page.url) and len(candidates) < 2:
+            print(f"[{NAME}] Low yield on Retail Giant. Attempting Reload & Retry...", file=sys.stderr)
+            try:
+                page.reload(wait_until="domcontentloaded")
+                page.wait_for_timeout(2000) # Give it a moment
+                # Quick re-scan for common Amazon/Flipkart selectors
+                imgs = page.query_selector_all("#landingImage, #imgTagWrapperId img, .a-dynamic-image")
+                for i in imgs:
+                    src = i.get_attribute('src') or i.get_attribute('data-old-hires')
+                    if src: candidates.append({'src': src, 'method': 'amazon_retry'})
+            except Exception as e:
+                 print(f"[{NAME}] Amazon/Flipkart retry error: {e}", file=sys.stderr)
+
         # === LEVEL 5 & 7: SAFE NORMALIZATION & STRICT FILTERING ===
-        final_urls = process_luxury_images(raw_urls)
+        final_urls = process_luxury_images(candidates, page.url)
         
         if final_urls:
             return final_urls, "Agent 7K (Enterprise Luxury)"
         
-    except Exception:
-        pass 
+    except Exception as e:
+        print(f"[{NAME}] Error in run_agent_7k: {e}", file=sys.stderr)
 
     return [], ""
 
-def process_luxury_images(urls):
+def process_luxury_images(candidates, base_url):
     """
     Normalizes images SAFELY and applies STRICT luxury filtering.
     """
     clean_list = []
     seen = set()
     
-    # STRICT FILTER LEVEL 7
+    # EXPANDED JUNK TERMS (STRICT FILTER LEVEL 7)
     JUNK_TERMS = [
         'base64', 'icon', 'logo', 'button', 'star', 'rating', 'avatar', 
         'sprite', 'blank', 'transparent', 'gif', 'loader', 'spinner',
         'cookielaw', 'tracking', 'pixel', 'facebook', 'twitter', 
-        'instagram', 'pinterest', 'banner', 'campaign', 'editorial'
+        'instagram', 'pinterest', 'banner', 'campaign', 'editorial',
+        'social', 'thumb', 'profile', 'promo', 'advert', 'flag', 'review',
+        'arrow', 'chevron', 'plus', 'minus', 'zoom', 'close', 'cookie',
+        'footer', 'header', 'cart', 'bag', 'wishlist', 'search', 'menu',
+        'share', 'print', 'download', 'play', 'pause', 'video', 'audio',
+        'placeholder', 'default', 'empty', 'no-image', 'missing', 'broken'
     ]
     
     # TERMS INDICATING SIGNED/SECURE URLS (DO NOT TOUCH)
-    SECURITY_PARAMS = ['sig', 'signature', 'token', 'auth', 'key', 'hmac']
+    SECURITY_PARAMS = ['sig', 'signature', 'token', 'auth', 'key', 'hmac', 'expires', 'timestamp']
 
-    for u in urls:
+    for c in candidates:
+        u = c.get('src')
         if not u: continue
         u = u.strip()
         
+        # 1. Normalize protocol-relative URLs
         if u.startswith('//'):
             u = 'https:' + u
             
+        # 2. Resolve relative paths (starts with /) using base URL
+        if u.startswith('/'):
+            try:
+                u = urllib.parse.urljoin(base_url, u)
+            except Exception:
+                continue # Skip if cannot resolve securely
+
         lower_u = u.lower()
         
-        # 1. Strict Junk Filter
+        # 3. Strict Junk Filter
         if any(j in lower_u for j in JUNK_TERMS):
             continue
             
-        # 2. Extension Check
+        # 4. Extension Check
         if any(u.endswith(ext) for ext in ['.svg', '.ico', '.gif']):
             continue
 
-        # 3. SAFE Normalization (Level 5)
+        # 5. SAFE Normalization (Level 5)
         # Check if URL is signed/sensitive
         is_sensitive = any(p in lower_u for p in SECURITY_PARAMS)
         

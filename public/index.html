@@ -29,6 +29,15 @@
                     <div id="loader" class="spinner" style="display:none"></div>
                 </button>
             </div>
+
+            <!-- DINO GAME CONTAINER (Hidden by default) -->
+            <div id="dinoGame" class="dino-container" style="display:none;">
+                <p class="dino-msg">⏳ Scraper is running (Agents 1-7K activated)...<br>Play while you wait! (Space/Tap
+                    to Jump)</p>
+                <iframe src="https://chromedino.com/" frameborder="0" scrolling="no" width="100%" height="300"
+                    loading="lazy"></iframe>
+            </div>
+
             <p class="security-note">
                 <span class="icon">🛡️</span> Secured by <strong>Agent 7K (God Mode)</strong>. Visual Trust Model & Safe
                 Normalization Active.
@@ -41,6 +50,15 @@
         </section>
 
         <div id="statusMsg" class="status-msg"></div>
+
+        <!-- NOTIFICATION TOAST -->
+        <div id="toast" class="toast">
+            <span class="toast-icon">✅</span>
+            <div class="toast-content">
+                <div class="toast-title">Extraction Complete!</div>
+                <div class="toast-desc">Your images are ready. Stop playing! 🎮</div>
+            </div>
+        </div>
 
         <!-- FEATURES & TECH -->
         <section class="features-section">

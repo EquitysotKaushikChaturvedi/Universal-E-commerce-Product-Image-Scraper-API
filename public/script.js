@@ -35,6 +35,9 @@ async function extractImages() {
     btnText.style.display = 'none';
     loader.style.display = 'block';
 
+    // Show Dino Game to pass time
+    document.getElementById('dinoGame').style.display = 'block';
+
     try {
         const response = await fetch('/api/scrape', {
             method: 'POST',
@@ -56,30 +59,47 @@ async function extractImages() {
         }
 
     } catch (error) {
+        // Show Error Info
+        statusMsg.innerText = "Error: " + (error.message || "Failed to contact server.");
         console.error(error);
-        statusMsg.style.color = '#e74c3c';
-        statusMsg.innerText = "Server Error. Check console.";
     } finally {
         // Reset Button
         extractBtn.disabled = false;
-        btnText.style.display = 'block';
+        btnText.style.display = 'inline';
         loader.style.display = 'none';
     }
 }
 
 function renderImages(images) {
-    const container = document.getElementById('resultSection');
-    container.innerHTML = "";
+    const resultSection = document.getElementById('resultSection');
 
-    images.forEach(imgUrl => {
-        const card = document.createElement('div');
-        card.className = 'image-card';
-
-        card.innerHTML = `
+    // Create Image Cards (Clean, no buttons)
+    const html = images.map(imgUrl => `
+        <div class="image-card">
             <img src="${imgUrl}" loading="lazy" alt="Product Image" onerror="this.style.display='none'">
-            <a href="${imgUrl}" target="_blank" class="download-link" download>OPEN</a>
-        `;
+        </div>
+    `).join('');
 
-        container.appendChild(card);
-    });
+    resultSection.innerHTML = html;
+    resultSection.style.display = 'grid';
+
+    // Show Success Notification
+    showToast();
+}
+
+function showToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+
+    // Play Notification Sound (Optional/Subtle)
+    try {
+        const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3');
+        audio.volume = 0.5;
+        audio.play();
+    } catch (e) { }
+
+    // Hide after 5 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 5000);
 }

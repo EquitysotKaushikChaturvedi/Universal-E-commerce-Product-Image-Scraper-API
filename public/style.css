@@ -7,8 +7,10 @@
 }
 
 body {
-    background-color: #ffffff; /* Clean White */
-    color: #111; /* Almost Black */
+    background-color: #ffffff;
+    /* Clean White */
+    color: #111;
+    /* Almost Black */
     display: flex;
     justify-content: center;
     min-height: 100vh;
@@ -82,12 +84,14 @@ input {
 
 input:focus {
     border-color: #000;
-    box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
 button {
-    background: #000; /* Black Button */
-    color: #fff; /* White Text */
+    background: #000;
+    /* Black Button */
+    color: #fff;
+    /* White Text */
     border: none;
     padding: 0 30px;
     border-radius: 8px;
@@ -119,6 +123,79 @@ button:active {
     border: 1px solid #eee;
 }
 
+/* DINO GAME */
+.dino-container {
+    width: 100%;
+    margin-top: 20px;
+    border: 2px solid #000;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f7f7f7;
+    text-align: center;
+}
+
+.dino-msg {
+    background: #000;
+    color: #fff;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* TOAST NOTIFICATION */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: -300px;
+    /* Hidden initially */
+    background: #fff;
+    border-left: 5px solid #000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-radius: 4px;
+    transition: right 0.5s ease;
+    z-index: 1000;
+}
+
+.toast.show {
+    right: 20px;
+}
+
+.toast-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+.toast-desc {
+    font-size: 13px;
+    color: #666;
+}
+
+/* DOWNLOAD BUTTON */
+.btn-download {
+    display: block;
+    width: 100%;
+    padding: 8px 0;
+    margin-top: 10px;
+    background: #000;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-download:hover {
+    opacity: 0.8;
+}
+
 /* RESULTS GRID */
 .results-grid {
     display: grid;
@@ -133,27 +210,29 @@ button:active {
     border-radius: 8px;
     overflow: hidden;
     background: #f4f4f4;
-    aspect-ratio: 3/4; /* Vertical ratio typical for fashion */
+    aspect-ratio: 3/4;
+    /* Vertical ratio typical for fashion */
     border: 1px solid #eee;
     transition: transform 0.2s;
 }
 
 .image-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
 .image-card img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* or contain, depending on preference */
+    object-fit: cover;
+    /* or contain, depending on preference */
 }
 
 .download-link {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    background: rgba(255,255,255,0.9);
+    background: rgba(255, 255, 255, 0.9);
     color: #000;
     padding: 6px 12px;
     border-radius: 4px;
@@ -228,7 +307,9 @@ button:active {
 }
 
 @keyframes spin {
-    100% { transform: rotate(360deg); }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .status-msg {
