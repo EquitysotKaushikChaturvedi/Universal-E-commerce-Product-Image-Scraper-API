@@ -192,6 +192,42 @@ def run_agent_7k(page: Page):
                 print(f"[{NAME}] Scroll maneuver errors: {e}", file=sys.stderr)
 
         # ------------------------------------------------------------------
+        # STRATEGY 5: REGEX SCANNER (The "Source Code Bypass") - H&M / ZARA / AMAZON
+        # ------------------------------------------------------------------
+        if any(d in page.url for d in ["hm.com", "zara.com", "amazon", "amzn"]):
+            print(f"[{NAME}] Initiating Regex Source Scan...", file=sys.stderr)
+            try:
+                content = page.content()
+                # Find all jpg/png/webp URLs
+                regex_matches = re.findall(r'(https?://[^"\s>]+\.(?:jpg|jpeg|png|webp)\?[^"\s]*)', content)
+                
+                # Loose regex for Amazon specifically (often ends in .jpg without params in JSON)
+                if "amazon" in page.url:
+                    amazon_matches = re.findall(r'(https?://m\.media-amazon\.com/images/I/[^"\s>]+\.jpg)', content)
+                    regex_matches.extend(amazon_matches)
+
+                for m in regex_matches:
+                    clean_m = m
+                    
+                    # Amazon Clean
+                    if "amazon" in page.url and "media-amazon" in m:
+                        # Remove definition params to get max res
+                        clean_m = re.sub(r'\._S[A-Z0-9]+_\.', '.', m)
+                        candidates.append({'src': clean_m, 'method': 'regex_scan_amazon'})
+                        
+                    # H&M Clean
+                    elif "hm.com" in page.url and ("product" in m or "dam" in m):
+                        clean_m = re.sub(r'\?imwidth=\d+', '?imwidth=2500', m)
+                        candidates.append({'src': clean_m, 'method': 'regex_scan_hm'})
+
+                    # Zara Clean
+                    elif "zara.com" in page.url:
+                        candidates.append({'src': clean_m, 'method': 'regex_scan_zara'})
+
+            except Exception as e:
+                print(f"[{NAME}] Regex scan error: {e}", file=sys.stderr)
+
+        # ------------------------------------------------------------------
         # STRATEGY 6: AMAZON / FLIPKART RETRY (The "Double Tap")
         # ------------------------------------------------------------------
         # Only retry if initial visual scan yielded few results
@@ -199,7 +235,7 @@ def run_agent_7k(page: Page):
             print(f"[{NAME}] Low yield on Retail Giant. Attempting Reload & Retry...", file=sys.stderr)
             try:
                 page.reload(wait_until="domcontentloaded")
-                page.wait_for_timeout(2000) # Give it a moment
+                page.wait_for_timeout(4000) # Increased to 4s
                 # Quick re-scan for common Amazon/Flipkart selectors
                 imgs = page.query_selector_all("#landingImage, #imgTagWrapperId img, .a-dynamic-image")
                 for i in imgs:
@@ -236,7 +272,8 @@ def process_luxury_images(candidates, base_url):
         'arrow', 'chevron', 'plus', 'minus', 'zoom', 'close', 'cookie',
         'footer', 'header', 'cart', 'bag', 'wishlist', 'search', 'menu',
         'share', 'print', 'download', 'play', 'pause', 'video', 'audio',
-        'placeholder', 'default', 'empty', 'no-image', 'missing', 'broken'
+        'placeholder', 'default', 'empty', 'no-image', 'missing', 'broken',
+        'chart', 'guide', 'measure', 'sizing', 'fit', 'infographic'
     ]
     
     # TERMS INDICATING SIGNED/SECURE URLS (DO NOT TOUCH)

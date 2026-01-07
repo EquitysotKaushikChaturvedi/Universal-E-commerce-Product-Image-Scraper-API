@@ -84,7 +84,11 @@ def main():
                 headless=True 
             )
             
-            context = browser.new_context(viewport=None)
+            # Real User Agent to bypass basic blocking
+            context = browser.new_context(
+                viewport=None,
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            )
             page = context.new_page()
             
             # Init Response
@@ -108,9 +112,10 @@ def main():
                 
             stabilize_page(page)
             
-            # Quick Post-Load Check
-            if "Access Denied" in page.title():
-                response["note"] = "ACCESS_DENIED_BY_SITE"
+            # Quick Post-Load Check (Blocking Detection)
+            page_title = page.title()
+            if "Access Denied" in page_title or "Robot Check" in page_title or "CAPTCHA" in page_title:
+                response["note"] = "BLOCKED_BY_AMAZON_CAPTCHA"
                 print(json.dumps(response))
                 browser.close()
                 sys.exit(0)
