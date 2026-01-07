@@ -47,7 +47,13 @@ async function extractImages() {
             body: JSON.stringify({ url: url })
         });
 
-        const data = await response.json();
+        const text = await response.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            throw new Error(`Server returned non-JSON response: ${text.slice(0, 100)}...`);
+        }
 
         if (response.ok && data.product_images && data.product_images.length > 0) {
             renderImages(data.product_images);
