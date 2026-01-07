@@ -81,7 +81,13 @@ def main():
             # This is "Production Ready" (Invisible).
             
             browser = p.firefox.launch(
-                headless=True 
+                headless=True,
+                args=[
+                    "--no-remote",
+                    "--disable-dev-shm-usage", # Critical for Docker OOM
+                    "--disable-background-networking",
+                    "--disable-gpu" 
+                ]
             )
             
             # Real User Agent to bypass basic blocking

@@ -1,5 +1,8 @@
 FROM python:3.9-slim
 
+# ENSURE LOGS SHOW UP IN RENDER
+ENV PYTHONUNBUFFERED=1
+
 # Install Node.js
 RUN apt-get update && apt-get install -y nodejs npm
 
