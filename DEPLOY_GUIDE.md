@@ -12,10 +12,12 @@ These platforms support Docker/Buildpacks and are compatible with Playwright.
 1.  Push this code to **GitHub**.
 2.  Go to [Render.com](https://render.com) -> New **Web Service**.
 3.  Connect your GitHub repository.
-4.  **Environment**: `Docker` (if you add a Dockerfile) OR `Node` (if using buildpack).
-    *   *Tip*: Using a `Dockerfile` is best for Playwright.
-5.  **Build Command**: `npm install && pip install -r scraper/requirements.txt && python -m playwright install chromium`
-6.  **Start Command**: `npm start`
+4.  **CRITICAL STEP**: Under "Runtime", select **Docker**.
+    *   *Do NOT select Node or Python.*
+    *   *If you do not see "Docker", you might need to create a new service.*
+    *   *The file path in logs should be `/app/...`. If it says `/opt/render/...`, you are NOT using Docker.*
+5.  **Build Command**: (Leave empty, Docker handles it)
+6.  **Start Command**: (Leave empty, Docker handles it)
 7.  Deploy!
 
 ### Steps for Railway.app
