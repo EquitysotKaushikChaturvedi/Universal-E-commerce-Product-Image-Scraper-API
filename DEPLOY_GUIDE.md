@@ -39,8 +39,10 @@ You cannot host the *Scraper/Python* part on Vercel easily.
 
 ---
 
-## Dockerfile (For Render/Railway/Fly.io)
-Create a file named `Dockerfile` in the root directory:
+## Dockerfile (Included)
+I have already created a `Dockerfile` in the root directory for you. It is configured to install **Firefox** (required for Agent 7K) instead of Chromium.
+
+If you need to create it manually, here is the content:
 
 ```dockerfile
 FROM python:3.9-slim
@@ -52,8 +54,10 @@ RUN apt-get update && apt-get install -y nodejs npm
 WORKDIR /app
 COPY . .
 RUN pip install -r scraper/requirements.txt
-RUN playwright install chromium
-RUN playwright install-deps
+
+# INSTALL FIREFOX
+RUN playwright install firefox
+RUN playwright install-deps firefox
 
 # Install Node Dependencies
 RUN npm install
